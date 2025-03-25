@@ -1,6 +1,8 @@
 name: Scrape DOGE data
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * 1'  
 
   
 permissions:
@@ -13,13 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-    # Step 1: check-out repo
     - name: check-out repo
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    # Step 2: install python and required packages
     - name: Install Python
       uses: actions/setup-python@v5
       with:
@@ -29,7 +29,6 @@ jobs:
     - name: install lxml
       run: pip install lxml
 
-    # Step 3: run DOGE scraper
     - name: scrape DOGE
       run: python doge-scrape.py
 
@@ -40,5 +39,5 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@users.noreply.github.com"
           git add data/*.csv
-          git commit -m "Date Updated" && git push || true
+          git commit -m "Data Updated" && git push || true
     
