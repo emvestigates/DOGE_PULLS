@@ -68,7 +68,7 @@ def configure_driver():
     return Firefox(options=op)
 
 def open_tables(driver):
-    buttons = driver.find_elements(By.XPATH,"//*[contains(text(), 'View All ')]")
+    buttons = driver.find_elements(By.XPATH,"//*[contains(text(), 'Next Page')]")
     [b.click() for b in buttons]
     return driver
 
