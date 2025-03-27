@@ -104,7 +104,7 @@ def scrape_doge(driver):
         all_property_data.append(property_df)
 
         # Locate the "Next Page" button
-        next_buttons = driver.find_elements(By.XPATH, "//*[contains(text(), 'Next page')]")
+        next_buttons = driver.find_elements(By.XPATH, "//button[@aria-label='Next page']")
 
         # If no "Next Page" button is found, break the loop
         if not next_buttons:
