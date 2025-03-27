@@ -113,7 +113,15 @@ def scrape_doge(driver):
 
         # Click on the "Next Page" button (if multiple buttons, click all of them)
         for button in next_buttons:
-            button.click()
+            driver.execute_script("arguments[0].scrollIntoView(true);", button)
+            sleep(1)  # Wait for the scroll animation to finish
+
+            try:
+                button.click()
+                break  # If successful, exit the loop
+            except Exception as e:
+                print(f"Error clicking 'Next Page' button: {e}")
+                continue  # Try next button (if multiple)
 
         # Wait for the next page to load (adjust time if needed)
         sleep(3)
