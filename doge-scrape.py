@@ -176,13 +176,13 @@ def extend_contract_data(contract_df_all):
     data_dict_list = []
     rh = req.utils.default_headers()
     # this takes about 2s per iteration. Speedup without DOSing the FPDS server?
-    for fpds_link in tqdm(contract_df.link.values):
+    for fpds_link in tqdm(contract_df_all.link.values):
         if validators.url(fpds_link):
             r = req.get(fpds_link,headers=rh)
             data_dict_list.append(parse_fpds_html(BeautifulSoup(r.content,features="lxml")))
         else:
             data_dict_list.append({k: None for k, _ in data_key_dict.items()})
-    return pd.concat([contract_df.reset_index().drop('index',axis=1),pd.DataFrame(data_dict_list)],axis=1)
+    return pd.concat([contract_df_all.reset_index().drop('index',axis=1),pd.DataFrame(data_dict_list)],axis=1)
 
 def save_doge_data(contract_df_all,grant_df_all,property_df_all):
     contract_df_all.to_csv(f'./data/doge-contract.csv',index=False)
