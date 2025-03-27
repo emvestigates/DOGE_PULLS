@@ -71,7 +71,7 @@ def configure_driver():
 def scrape_doge(driver):
     doge_data_url = 'https://doge.gov/savings'
     driver.get(doge_data_url)
-    time.sleep(2)
+    sleep(2)
 
     all_contract_data = []
     all_grant_data = []
@@ -116,7 +116,7 @@ def scrape_doge(driver):
             button.click()
 
         # Wait for the next page to load (adjust time if needed)
-        time.sleep(3)
+        sleep(3)
 
     # Concatenate all data from each page
     contract_df_all = pd.concat(all_contract_data, ignore_index=True)
