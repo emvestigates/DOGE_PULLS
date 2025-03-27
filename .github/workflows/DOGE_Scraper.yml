@@ -31,8 +31,6 @@ jobs:
     - name: scrape DOGE
       run: python doge-scrape.py
 
-    - name: Save datestamp
-      run: date > ./data/latest-scrape.txt
     - name: Commit and push
       run: |
           git config user.name "GitHub Actions"
