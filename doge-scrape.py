@@ -111,16 +111,13 @@ def scrape_doge(driver):
             print("No more pages.")
             break
 
-        # Click on the "Next Page" button (if multiple buttons, click all of them)
+        # Click on the "Next Page" button using JavaScript
         for button in next_buttons:
-            driver.execute_script("arguments[0].scrollIntoView(true);", button)
-            sleep(1)  # Wait for the scroll animation to finish
-
             try:
-                button.click()
+                driver.execute_script("arguments[0].click();", button)  # JavaScript click
                 break  # If successful, exit the loop
             except Exception as e:
-                print(f"Error clicking 'Next Page' button: {e}")
+                print(f"Error clicking 'Next Page' button using JavaScript: {e}")
                 continue  # Try next button (if multiple)
 
         # Wait for the next page to load (adjust time if needed)
