@@ -91,7 +91,7 @@ def extend_contract_data(contract_df):
     data_dict_list = []
     rh = req.utils.default_headers()
     # this takes about 2s per iteration. Speedup without DOSing the FPDS server?
-    for fpds_link in tqdm(contract_df.link.values):
+    for fpds_link in tqdm(contract_df.fpds_link.values):
         if validators.url(fpds_link):
             r = req.get(fpds_link,headers=rh)
             data_dict_list.append(parse_fpds_html(BeautifulSoup(r.content,features="lxml")))
