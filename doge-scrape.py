@@ -68,103 +68,13 @@ def configure_driver():
     return Firefox(options=op)
 
 
-def scrape_doge(driver):
-    doge_data_url = 'https://doge.gov/savings'
-    driver.get(doge_data_url)
-    sleep(2)
+def import_doge(driver):
+    contract_df = pd.read_csv('contracts_all.csv')
+    grant_df = pd.read_csv('grants_all.csv')
+    property_df = pd.read_csv('leases_all.csv')
 
-    all_contract_data = []
-    all_grant_data = []
-    all_property_data = []
+    return contract_df, grant_df, property_df
 
-    while True:
-        # Extract the tables on the current page
-        table_list = driver.find_elements(By.XPATH, "//table")
-        
-        if len(table_list) == 0:
-            print("No tables found on this page.")
-            break
-
-        # Scrape the contract table (first table)
-        contract_df = pd.read_html(io.StringIO(table_list[0].get_attribute('outerHTML')))[0]
-        link_cell_list = table_list[0].find_elements(By.XPATH, ".//tr/td[4]")
-        for idx, lc in enumerate(link_cell_list):
-            ac = lc.find_elements(By.TAG_NAME, 'a')
-            contract_df.loc[idx, 'Link'] = None if len(ac) == 0 else ac[0].get_attribute('href')
-
-        # Scrape the grant table (second table)
-        grant_df = pd.read_html(io.StringIO(table_list[1].get_attribute('outerHTML')))[0]
-        
-        # Scrape the property table (third table)
-        property_df = pd.read_html(io.StringIO(table_list[2].get_attribute('outerHTML')))[0]
-
-        # Append this page's data to the overall lists
-        all_contract_data.append(contract_df)
-        all_grant_data.append(grant_df)
-        all_property_data.append(property_df)
-
-        # Locate the "Next Page" button
-        next_buttons = driver.find_elements(By.XPATH, "//button[@aria-label='Next page']")
-
-        # If no "Next Page" button is found, break the loop
-        if not next_buttons:
-            print("No more pages.")
-            break
-
-        # Click on the "Next Page" button using JavaScript
-        for button in next_buttons:
-            try:
-                driver.execute_script("arguments[0].click();", button)  # JavaScript click
-                break  # If successful, exit the loop
-            except Exception as e:
-                print(f"Error clicking 'Next Page' button using JavaScript: {e}")
-                continue  # Try next button (if multiple)
-
-        # Wait for the next page to load (adjust time if needed)
-        sleep(3)
-
-    # Concatenate all data from each page
-    contract_df_all = pd.concat(all_contract_data, ignore_index=True)
-    grant_df_all = pd.concat(all_grant_data, ignore_index=True)
-    property_df_all = pd.concat(all_property_data, ignore_index=True)
-
-    return contract_df_all, grant_df_all, property_df_all
-
-def dollar_str_to_float(dstr):
-    return float(dstr.replace('$','').replace(',',''))
-
-def area_str_to_int(astr):
-    return int(astr.replace(',',''))
-
-def safe_to_dt(dtstr):
-    try:
-        dt = pd.to_datetime(dtstr)
-    except:
-        dt = None
-    return dt
-
-def df_row_diff(old_df,new_df):
-    return pd.concat([old_df,new_df])[new_df.columns].drop_duplicates(keep=False)
-
-def clean_stub_df(df):
-    df.columns = [k.lower().replace(' ','_') for k in df.keys()]
-    # in-column value replacement
-    if 'value' in df.keys():
-        df['value'] = [dollar_str_to_float(ds) for ds in df['value'].values]
-    if 'annual_lease' in df.keys():
-        df['annual_lease'] = [dollar_str_to_float(ds) for ds in df['annual_lease'].values]
-    if 'uploaded_on' in df.keys():
-        df['uploaded_dt'] = [safe_to_dt(dts) for dts in df['uploaded_on'].values]
-    # column splitting and replacement
-    if 'location' in df.keys():
-        loc_part_list = [loc.split(', ') for loc in df['location'].values]
-        for idx, loc_part_tup in enumerate(loc_part_list):
-            city_pred = len(loc_part_tup[1]) == 2
-            df.loc[idx,'city'] = loc_part_tup[0]    # city always first
-            df.loc[idx,'state'] = loc_part_tup[1] if city_pred else None
-            if len(loc_part_tup) > 2:
-                df.loc[idx,'agency'] = loc_part_tup[2] if city_pred else loc_part_tup[1]
-    return df
 
 def parse_fpds_html(fpds_soup):
     data_dict = {}
@@ -177,11 +87,11 @@ def parse_fpds_html(fpds_soup):
     data_dict['requirement_desc'] = None if req_desc_element is None else req_desc_element.get('text',default=None)
     return data_dict
 
-def extend_contract_data(contract_df_all):
+def extend_contract_data(contract_df):
     data_dict_list = []
     rh = req.utils.default_headers()
     # this takes about 2s per iteration. Speedup without DOSing the FPDS server?
-    for fpds_link in tqdm(contract_df_all.link.values):
+    for fpds_link in tqdm(contract_df.link.values):
         if validators.url(fpds_link):
             r = req.get(fpds_link,headers=rh)
             data_dict_list.append(parse_fpds_html(BeautifulSoup(r.content,features="lxml")))
@@ -189,10 +99,10 @@ def extend_contract_data(contract_df_all):
             data_dict_list.append({k: None for k, _ in data_key_dict.items()})
     return pd.concat([contract_df_all.reset_index().drop('index',axis=1),pd.DataFrame(data_dict_list)],axis=1)
 
-def save_doge_data(contract_df_all,grant_df_all,property_df_all):
-    contract_df_all.to_csv(f'./data/doge-contract.csv',index=False)
-    grant_df_all.to_csv(f'./data/doge-grant.csv',index=False)
-    property_df_all.to_csv(f'./data/doge-property.csv',index=False)
+def save_doge_data(contract_df,grant_df,property_df):
+    contract_df.to_csv(f'./data/doge-contract.csv',index=False)
+    grant_df.to_csv(f'./data/doge-grant.csv',index=False)
+    property_df.to_csv(f'./data/doge-property.csv',index=False)
 
 def update_doge_data():
     datetime_scrape = datetime.strftime(datetime.now(),'%Y-%m-%d-%H%M')
@@ -200,28 +110,21 @@ def update_doge_data():
     driver = configure_driver()
     print('loading current data...')
     pre_contract_df, pre_grant_df, pre_property_df = load_pre_data()
-    print('scraping new data...')
-    stub_contract_df, stub_grant_df, stub_property_df = scrape_doge(driver)
+    print('processing data...')
+    contract_df, grant_df, property_df = import_doge(driver)
     driver.quit()
-    stub_contract_df, stub_grant_df, stub_property_df = [clean_stub_df(df) for df in [stub_contract_df, stub_grant_df, stub_property_df]]
-    new_contract_df, new_grant_df, new_property_df = [
-        df_row_diff(pre_df,stub_df) for pre_df, stub_df in zip(
-            [pre_contract_df,pre_grant_df,pre_property_df],[stub_contract_df, stub_grant_df, stub_property_df]
-        )
-    ]
+    
     print('extending contract table with FPDS data...')
-    new_contract_df = extend_contract_data(new_contract_df)
-    new_contract_df['dt_scrape'] = datetime_scrape
-    new_grant_df['dt_scrape'] = datetime_scrape
-    new_property_df['dt_scrape'] = datetime_scrape
-    contract_df_all = pd.concat([pre_contract_df,new_contract_df])
-    grant_df_all = pd.concat([pre_grant_df,new_grant_df])
-    property_df_all = pd.concat([pre_property_df,new_property_df])
-    return contract_df_all, grant_df_all, property_df_all
+    contract_df = extend_contract_data(contract_df)
+    
+    contract_df = pd.concat([pre_contract_df,contract_df])
+    grant_df = pd.concat([pre_grant_df,grant_df])
+    property_ = pd.concat([pre_property_df,property_df])
+    return contract_df, grant_df, property_df
 
 def main():
-    contract_df_all, grant_df_all, property_df_all = update_doge_data()
-    save_doge_data(contract_df_all,grant_df_all,property_df_all)
+    contract_df, grant_df, property_df = update_doge_data()
+    save_doge_data(contract_df,grant_df,property_df)
 
 if __name__ == '__main__':
     main()
