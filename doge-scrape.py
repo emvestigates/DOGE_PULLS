@@ -97,7 +97,7 @@ def extend_contract_data(contract_df):
             data_dict_list.append(parse_fpds_html(BeautifulSoup(r.content,features="lxml")))
         else:
             data_dict_list.append({k: None for k, _ in data_key_dict.items()})
-    return pd.concat([contract_df_all.reset_index().drop('index',axis=1),pd.DataFrame(data_dict_list)],axis=1)
+    return pd.concat([contract_df.reset_index().drop('index',axis=1),pd.DataFrame(data_dict_list)],axis=1)
 
 def save_doge_data(contract_df,grant_df,property_df):
     contract_df.to_csv(f'./data/doge-contract.csv',index=False)
