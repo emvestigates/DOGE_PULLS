@@ -23,7 +23,7 @@ jobs:
       
     - name: Install R packages
       run: |
-        R -e "install.packages(c('plyr', 'dplyr', 'rvest', 'janitor', 'jsonlite'))"
+        R -e "install.packages(c('plyr', 'dplyr', 'jsonlite'))"
     - name: R Scraper
       run: Rscript doge_R_scraper.R
         
