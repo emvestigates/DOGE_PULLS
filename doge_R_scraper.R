@@ -1,3 +1,9 @@
+#set up requirements
+library(plyr)
+library(dplyr)
+library(rvest)
+library(janitor)
+library(jsonlite)
 
 #scrape contracts
 contracts <- fromJSON("https://api.doge.gov/savings/contracts?page=1&per_page=500", flatten=TRUE)
