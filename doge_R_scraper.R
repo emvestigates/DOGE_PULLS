@@ -1,8 +1,6 @@
 #set up requirements
 library(plyr)
 library(dplyr)
-library(rvest)
-library(janitor)
 library(jsonlite)
 
 #scrape contracts
