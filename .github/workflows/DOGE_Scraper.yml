@@ -23,10 +23,9 @@ jobs:
       
     - name: Install R packages
       run: |
-        R -e "install.packages(c('plyr', 'tidyverse', 'rvest', 'janitor', 'jsonlite'))"
-    - name: Run R scraper
-      run: |
-        doge_R_scraper.R
+        R -e "install.packages(c('plyr', 'dplyr', 'rvest', 'janitor', 'jsonlite'))"
+    - name: R Scraper
+      run: Rscript doge_R_scraper.R
         
     - name: Install Python
       uses: actions/setup-python@v5
@@ -37,7 +36,7 @@ jobs:
     - name: install lxml
       run: pip install lxml
 
-    - name: scrape DOGE
+    - name: Python Processor
       run: python doge-scrape.py
 
     - name: Commit files
