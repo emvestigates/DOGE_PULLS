@@ -18,7 +18,16 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
+    - name: Set up R
+      uses: r-lib/actions/setup-r@v2
+      
+    - name: Install R packages
+      run: |
+        R -e "install.packages(c('plyr', 'tidyverse', 'rvest', 'janitor', 'jsonlite'))"
+    - name: Run R scraper
+      run: |
+        doge_R_scraper.R
+        
     - name: Install Python
       uses: actions/setup-python@v5
       with:
@@ -31,13 +40,14 @@ jobs:
     - name: scrape DOGE
       run: python doge-scrape.py
 
-    - name: commit and push
+    - name: Commit files
       run: |
-        git config remote.origin.url https://github.com/emvestigates/DOGE_PULLS.git
-        git config --global user.name "$(git --no-pager log --format=format:'%an' -n 1)"
-        git config --global user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
-        git add data/*.csv
-        git commit -m "Data Updated" || exit 0
-        git pull
-        git push
+        git config --local user.name github-actions
+        git config --local user.email "actions@github.com"
+        git add data/*
+        git commit -am "Data Updated $(date)"
+        git push origin master
+      env:
+        REPO_KEY: ${{secrets.GITHUB_TOKEN}}
+        username: github-actions
     
