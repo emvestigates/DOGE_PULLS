@@ -34,6 +34,10 @@ contracts14 <- fromJSON("https://api.doge.gov/savings/contracts?page=14&per_page
 contracts_df14 <- ldply(contracts14, data.frame)
 contracts15 <- fromJSON("https://api.doge.gov/savings/contracts?page=15&per_page=500", flatten=TRUE)
 contracts_df15 <- ldply(contracts15, data.frame)
+contracts16 <- fromJSON("https://api.doge.gov/savings/contracts?page=16&per_page=500", flatten=TRUE)
+contracts_df16 <- ldply(contracts16, data.frame)
+contracts17 <- fromJSON("https://api.doge.gov/savings/contracts?page=17&per_page=500", flatten=TRUE)
+contracts_df17 <- ldply(contracts17, data.frame)
 
 #combine contracts
 contracts_all <- contracts_df %>% 
@@ -50,7 +54,9 @@ contracts_all <- contracts_df %>%
   bind_rows(contracts_df12) %>%
   bind_rows(contracts_df13) %>%
   bind_rows(contracts_df14) %>%
-  bind_rows(contracts_df15) 
+  bind_rows(contracts_df15) %>%
+  bind_rows(contracts_df16) %>%
+  bind_rows(contracts_df17)
 
 #scrape grants
 
@@ -92,6 +98,8 @@ grants18 <- fromJSON("https://api.doge.gov/savings/grants?page=18&per_page=500",
 grants_df18 <- ldply(grants18, data.frame)
 grants19 <- fromJSON("https://api.doge.gov/savings/grants?page=19&per_page=500", flatten=TRUE)
 grants_df19 <- ldply(grants19, data.frame)
+grants20 <- fromJSON("https://api.doge.gov/savings/grants?page=20&per_page=500", flatten=TRUE)
+grants_df20 <- ldply(grants20, data.frame)
 
 #combine grants
 grants_all <- grants_df %>% 
@@ -112,7 +120,8 @@ grants_all <- grants_df %>%
   bind_rows(grants_df16) %>%
   bind_rows(grants_df17) %>%
   bind_rows(grants_df18) %>%
-  bind_rows(grants_df19)
+  bind_rows(grants_df19) %>%
+  bind_rows(grants_df20)
 
 #scrape leases
 leases <- fromJSON("https://api.doge.gov/savings/leases?page=1&per_page=500", flatten=TRUE)
