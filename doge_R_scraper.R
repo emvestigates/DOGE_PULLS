@@ -48,6 +48,8 @@ contracts21 <- fromJSON("https://api.doge.gov/savings/contracts?page=21&per_page
 contracts_df21 <- ldply(contracts21, data.frame)
 contracts22 <- fromJSON("https://api.doge.gov/savings/contracts?page=22&per_page=500", flatten=TRUE)
 contracts_df22 <- ldply(contracts22, data.frame)
+contracts23 <- fromJSON("https://api.doge.gov/savings/contracts?page=23&per_page=500", flatten=TRUE)
+contracts_df23 <- ldply(contracts23, data.frame)
 
 #combine contracts
 contracts_all <- contracts_df %>% 
@@ -71,7 +73,8 @@ contracts_all <- contracts_df %>%
   bind_rows(contracts_df19) %>%
   bind_rows(contracts_df20) %>%
   bind_rows(contracts_df21) %>%
-  bind_rows(contracts_df22)
+  bind_rows(contracts_df22) %>%
+  bind_rows(contracts_df23)
 
 #scrape grants
 
@@ -175,11 +178,9 @@ grants_all <- grants_df %>%
 #scrape leases
 leases <- fromJSON("https://api.doge.gov/savings/leases?page=1&per_page=500", flatten=TRUE)
 leases_df <- ldply(leases, data.frame)
-leases2 <- fromJSON("https://api.doge.gov/savings/leases?page=2&per_page=500", flatten=TRUE)
-leases_df2 <- ldply(leases2, data.frame)
 
 #combine leases
-leases_all <- leases_df %>% bind_rows(leases_df2) 
+leases_all <- leases_df 
 
 #remove API metadata
 drops <- c(".id","X..i..","total_results","pages")
