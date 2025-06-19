@@ -48,7 +48,16 @@ data_key_dict = { # match on the 'id' field
     'product_service_desc': 'productOrServiceCodeDescription',
     'principal_naics_code': 'principalNAICSCode',
     'principal_naics_desc': 'NAICSCodeDescription',
+    'performance_state': 'placeStateCode',
+    'performance_location': 'placeLocationCode',
+    'performance_country': 'placeCountryCode',
+    'performance_county': 'principalPlaceOfPerformanceCountyName',
+    'performance_city': 'principalPlaceOfPerformanceName',
+    'performance_congressional_district': 'principalPlaceOfPerformanceCongressionalDistrict',
+    'performance_zip': 'placeOfPerformanceZIPCode',
+    'performance_zip_ext': 'placeOfPerformanceZIPCode4',
 }
+
 
 def safe_load_csv(filepath):
     df = pd.read_csv(filepath) if os.path.exists(filepath) else pd.DataFrame([])
@@ -98,6 +107,27 @@ def extend_contract_data(contract_df):
         else:
             data_dict_list.append({k: None for k, _ in data_key_dict.items()})
     return pd.concat([contract_df.reset_index().drop('index',axis=1),pd.DataFrame(data_dict_list)],axis=1)
+
+def extend_grant_data(grant_df,dt):
+    api_root = 'https://api.usaspending.gov/api/v2/awards/'
+    usas_df = pd.DataFrame([])
+    rh = req.utils.default_headers()
+    for link in tqdm(grant_df.link.values):
+        if validators.url(link):
+            try:
+                grant_id = os.path.basename(link)
+                usas_req_url = os.path.join(api_root,grant_id)
+                r = limit_req(usas_req_url,headers=rh)
+                grant_row_df = pd.json_normalize(r.json(),sep='_')
+                grant_row_df = grant_row_df.rename(columns={'description': 'description_usas'})
+                usas_df = pd.concat([usas_df,grant_row_df],ignore_index=True)
+            except:
+                log_row_error('grant',dt,usas_req_url)
+                usas_df = pd.concat([usas_df,pd.DataFrame([],index=[0])],ignore_index=True)
+        else:
+            usas_df = pd.concat([usas_df,pd.DataFrame([],index=[0])],ignore_index=True)
+    return pd.concat([grant_df.reset_index().drop('index',axis=1),usas_df],axis=1)
+
 
 def save_doge_data(contract_df,grant_df,property_df):
     contract_df.to_csv(f'./data/doge-contract.csv',index=False)
