@@ -25,7 +25,7 @@ jobs:
       run: |
         R -e "install.packages(c('plyr', 'dplyr', 'jsonlite'))"
     - name: R Scraper
-      run: Rscript doge_R_scraper.R
+      run: Rscript new_doge_R_scraper.R
         
     - name: Install Python
       uses: actions/setup-python@v5
