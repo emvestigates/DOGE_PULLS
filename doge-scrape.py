@@ -108,7 +108,7 @@ def extend_contract_data(contract_df):
             data_dict_list.append({k: None for k, _ in data_key_dict.items()})
     return pd.concat([contract_df.reset_index().drop('index',axis=1),pd.DataFrame(data_dict_list)],axis=1)
 
-def extend_grant_data(grant_df,dt):
+def extend_grant_data(grant_df):
     api_root = 'https://api.usaspending.gov/api/v2/awards/'
     usas_df = pd.DataFrame([])
     rh = req.utils.default_headers()
@@ -149,7 +149,7 @@ def update_doge_data():
     
     contract_df = pd.concat([pre_contract_df,contract_df])
     grant_df = pd.concat([pre_grant_df,grant_df])
-    property_ = pd.concat([pre_property_df,property_df])
+    property_df = pd.concat([pre_property_df,property_df])
     return contract_df, grant_df, property_df
 
 def main():
