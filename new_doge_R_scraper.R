@@ -45,11 +45,11 @@ scrape_doge <- function() {
   return(list(contracts = contract_df, grants = grant_df, leases = property_df))
 }
 result <- scrape_doge()
-contracts_all <- result$contracts
-grants_all <- result$grants
-leases_all <- result$leases
+contracts_df <- result$contracts
+grants_df <- result$grants
+leases_df <- result$leases
 
-write.csv(contracts_all, "contracts_all.csv")
-write.csv(grants_all, "grants_all.csv")
-write.csv(leases_all, "leases_all.csv")
+write.csv(contracts_df, "contracts_all.csv")
+write.csv(grants_df, "grants_all.csv")
+write.csv(leases_df, "leases_all.csv")
 
