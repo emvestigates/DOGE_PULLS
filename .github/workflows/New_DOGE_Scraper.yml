@@ -26,7 +26,7 @@ jobs:
       run: |
           install.packages("remotes")
           remotes::install_cran(c("httr", "jsonlite", "dplyr"))
-          
+      shell: Rscript {0}    
     - name: R Scraper
       run: Rscript new_doge_R_scraper.R
         
