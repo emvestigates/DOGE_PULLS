@@ -39,13 +39,17 @@ scrape_doge <- function() {
     sort_order = "desc",
     per_page = 500
   )
-  contract_df <- scrape_doge_endpoint(api_root, "contracts", params)
+  contracts_df <- scrape_doge_endpoint(api_root, "contracts", params)
   grant_df <- scrape_doge_endpoint(api_root, "grants", params)
   property_df <- scrape_doge_endpoint(api_root, "leases", params)
   return(list(contracts = contract_df, grants = grant_df, leases = property_df))
 }
 result <- scrape_doge()
-contract_df <- result$contracts
-grant_df <- result$grants
-property_df <- result$leases
+contracts_all <- result$contracts
+grants_all <- result$grants
+leases_all <- result$leases
+
+write.csv(contracts_all, "contracts_all.csv")
+write.csv(grants_all, "grants_all.csv")
+write.csv(leases_all, "leases_all.csv")
 
