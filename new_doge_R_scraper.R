@@ -1,5 +1,3 @@
-
-
 library(httr)
 library(jsonlite)
 library(dplyr)
@@ -39,17 +37,17 @@ scrape_doge <- function() {
     sort_order = "desc",
     per_page = 500
   )
-  contracts_df <- scrape_doge_endpoint(api_root, "contracts", params)
+  contract_df <- scrape_doge_endpoint(api_root, "contracts", params)
   grant_df <- scrape_doge_endpoint(api_root, "grants", params)
   property_df <- scrape_doge_endpoint(api_root, "leases", params)
   return(list(contracts = contract_df, grants = grant_df, leases = property_df))
 }
 result <- scrape_doge()
-contracts_df <- result$contracts
-grants_df <- result$grants
-leases_df <- result$leases
+contract_df <- result$contracts
+grant_df <- result$grants
+property_df <- result$leases
 
-write.csv(contracts_df, "contracts_all.csv")
-write.csv(grants_df, "grants_all.csv")
-write.csv(leases_df, "leases_all.csv")
+write.csv(contract_df, "contracts_all.csv")
+write.csv(grant_df, "grants_all.csv")
+write.csv(property_df, "leases_all.csv")
 
