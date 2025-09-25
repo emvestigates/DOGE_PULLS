@@ -146,7 +146,7 @@ def extend_contract_data(contract_df):
             data_dict_list.append({k: None for k, _ in data_key_dict.items()})
     return pd.concat([contract_df.reset_index().drop('index',axis=1),pd.DataFrame(data_dict_list)],axis=1)
 
-def save_doge_data(contract_df,grant_df,property_df):\
+def save_doge_data(contract_df,grant_df,property_df):
     contract_df.to_csv(f'./data/doge-contract.csv',index=False)
     grant_df.to_csv(f'./data/doge-grant.csv',index=False)
     property_df.to_csv(f'./data/doge-property.csv',index=False)
