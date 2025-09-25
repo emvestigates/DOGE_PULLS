@@ -138,7 +138,7 @@ def extend_contract_data(contract_df):
         if validators.url(fpds_link):
             try:
                 r = limit_req(fpds_link,headers=rh)
-                data_dict_list.append(parse_fpds_html(BeautifulSoup(r.content,features="lxml")))\
+                data_dict_list.append(parse_fpds_html(BeautifulSoup(r.content,features="lxml")))
             except Exception as e:
                 print(f"Error processing {fpds_link}: {e}")
                 data_dict_list.append({k: None for k, _ in data_key_dict.items()})
